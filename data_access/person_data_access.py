@@ -3,9 +3,10 @@ import json
 from models.person import Person
 from models.shiftsystem import Shiftsystem
 from datetime import date
+from typing import List
 
 class PersonDataAccess:
-    def __init__(self, path):
+    def __init__(self, path: str = "shiftcomparingDb.sqlite"):
         self.path = path
         self.connection = sqlite3.connect(path)
         self.cursor = self.connection.cursor()
@@ -56,7 +57,7 @@ class PersonDataAccess:
         person = Person(result[1], result[2], date.fromisoformat(result[3]), result[0], result[5], shiftsystem)
         return person
     
-    def get_all_persons(self):
+    def get_all_persons(self) -> List[Person]:
         query="""
         SELECT
             p.*, s.*

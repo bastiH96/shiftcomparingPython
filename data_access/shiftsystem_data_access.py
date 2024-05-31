@@ -3,7 +3,7 @@ import json
 from models.shiftsystem import Shiftsystem
 
 class ShiftsystemDataAccess:
-    def __init__(self, path):
+    def __init__(self, path: str = "shiftcomparingDb.sqlite"):
         self.path = path
         self.connection = sqlite3.connect(path)
         self.cursor = self.connection.cursor()

@@ -3,6 +3,7 @@ from services.excelCalculator import ExcelService
 from datetime import date
 
 class ComparisonHandler:
+    
     def create_comparison_dialog(self):
         try:
             print("Which persons do you want to compare?")
@@ -13,7 +14,8 @@ class ComparisonHandler:
             print("Calendar was created!")
         except Exception as e:
             print(e)
-        
+
+
     def get_persons_for_comparison(self):
         persons = PersonDataAccess().get_all_persons()
         selected_persons = []
@@ -41,10 +43,10 @@ class ComparisonHandler:
             else:
                 add_more_persons = False
         return selected_persons
-                    
+
+
     def get_year_for_comparison(self):
         year = int(input())
         if 1900 <= year <= 2090:
             return year
-            
         

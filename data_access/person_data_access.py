@@ -5,12 +5,15 @@ from models.shiftsystem import Shiftsystem
 from datetime import date
 from typing import List
 
+
 class PersonDataAccess:
+    
     def __init__(self, path: str = "shiftcomparingDb.sqlite"):
         self.path = path
         self.connection = sqlite3.connect(path)
         self.cursor = self.connection.cursor()
-        
+
+
     def create_person_table(self):
         query="""
         CREATE TABLE IF NOT EXISTS 
@@ -25,7 +28,8 @@ class PersonDataAccess:
         """
         self.cursor.execute(query)
         self.connection.commit()
-        
+
+
     def insert_person(self, person: Person):
         query="""
         INSERT INTO
@@ -35,7 +39,8 @@ class PersonDataAccess:
         """
         self.cursor.execute(query, (person.name, person.alias, person.shiftpattern_start_date.isoformat(), person.shiftsystem_id))
         self.connection.commit()
-        
+
+
     def get_one_person(self, id: int):
         query="""
         SELECT
@@ -56,7 +61,8 @@ class PersonDataAccess:
             shiftsystem = None
         person = Person(result[1], result[2], date.fromisoformat(result[3]), result[0], result[5], shiftsystem)
         return person
-    
+
+
     def get_all_persons(self) -> List[Person]:
         query="""
         SELECT
@@ -78,7 +84,8 @@ class PersonDataAccess:
             person = Person(result[1], result[2], date.fromisoformat(result[3]), result[0], result[5], shiftsystem)
             list_of_persons.append(person)
         return list_of_persons
-    
+
+
     def update_person(self, person: Person):
         query="""
         UPDATE
@@ -93,7 +100,8 @@ class PersonDataAccess:
         """
         self.cursor.execute(query, (person.name, person.alias, person.shiftpattern_start_date.isoformat(), person.shiftsystem_id, person.id))
         self.connection.commit()
-        
+
+
     def delete_person(self, id: int):
         query="""
         DELETE FROM
@@ -103,5 +111,4 @@ class PersonDataAccess:
         """
         self.cursor.execute(query, (id,))
         self.connection.commit()
-        
         

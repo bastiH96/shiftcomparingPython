@@ -7,7 +7,9 @@ from typing import List
 from calendar import monthrange, month_name
 import os
 
+
 class ExcelService:
+    
     def __init__(self, persons: List[Person], year: int, path: str = ""):
         self.persons = persons
         self.comparing_year = date(year, 1, 1)
@@ -33,8 +35,8 @@ class ExcelService:
                 person.shiftpattern_iterator = len(person.shiftsystem.shiftpattern) - (timespan % len(person.shiftsystem.shiftpattern))
                 if person.shiftpattern_iterator == len(person.shiftsystem.shiftpattern):
                     person.shiftpattern_iterator = 0
-         
-                    
+
+
     def add_content_to_worksheet(self):
         first_column = self.first_column
         workbook_title = self.table_header()
@@ -59,8 +61,8 @@ class ExcelService:
         
         # self.wb.save(f"{self.path}{workbook_title}.xlsx")
         self.wb.save(os.path.join(self.path, f"{workbook_title}.xlsx"))
-       
-            
+
+
     def table_header(self):
         person_names = ""
         for person in self.persons:
@@ -71,8 +73,8 @@ class ExcelService:
         header = f"Schichtkalender {self.comparing_year.year} {person_names}"
         self.ws.cell(self.first_row - 1, self.first_column, header).font = Font(size=24)
         return header
-    
-            
+
+
     def add_month_name_header(self, first_column, last_column, month):
         self.ws.merge_cells(start_row       = self.first_row, 
                             start_column    = first_column, 
@@ -82,25 +84,30 @@ class ExcelService:
                      first_column, 
                      month_name[month])
         self.month_name_header_styling(first_column, last_column, month)
-        
+
+
     def month_name_header_styling(self, first_column, last_column, month):   
-        monthcolor = self.get_month_color(month) 
+        # monthcolor = self.get_month_color(month) 
+        monthcolor = self.get_month_color_pale(month)
         # color seems to be applied to every merged cell while border needs to be applied to every single cell of a merged complex
         self.ws.cell(self.first_row, first_column).fill = PatternFill(start_color=monthcolor, end_color=monthcolor, fill_type="solid")
         self.ws.cell(self.first_row, first_column).border = Border(left=Sides.medium, top=Sides.medium, bottom=Sides.medium) # first cell
         self.ws.cell(self.first_row, last_column).border = Border(top=Sides.medium, right=Sides.medium, bottom=Sides.medium) # last cell
         for column in range(first_column + 1, last_column):
             self.ws.cell(self.first_row, column).border = Border(top=Sides.medium, bottom=Sides.medium)
-        
+
+
     def add_person_column_header(self, current_column, month):
         for person in self.persons:
             current_cell = self.ws.cell(self.first_row + 1,
                          current_column + self.persons.index(person),
                          person.alias)
             self.person_column_header_styling(person, current_cell, month)
-                
+
+
     def person_column_header_styling(self, person: Person, current_cell: Cell, month: int):
-        month_color = self.get_month_color(month)
+        month_color = self.get_month_color_pale(month)
+        
         current_cell.fill = PatternFill(start_color=month_color, end_color=month_color, fill_type="solid")
         current_cell.alignment = Alignment(horizontal="center")
         if self.persons.index(person) == 0 and len(self.persons) == 1: # if there is only one person
@@ -111,20 +118,23 @@ class ExcelService:
             current_cell.border = Border(top=Sides.thin, right=Sides.medium, bottom=Sides.thin)
         else: # persons between
             current_cell.border = Border(top=Sides.thin, bottom=Sides.thin)
-            
+
+
     def white_space_styling(self, first_column_of_month: int, month: int):
-        month_color = self.get_month_color(month)
+        month_color = self.get_month_color_pale(month)
         self.ws.cell(self.first_row + 1, first_column_of_month).fill = PatternFill(start_color=month_color, end_color=month_color, fill_type="solid")
         self.ws.cell(self.first_row + 1, first_column_of_month + 1).fill = PatternFill(start_color=month_color, end_color=month_color, fill_type="solid")
-            
+
+
     def add_day_of_month_column(self, first_column, month, day):
         current_cell = self.ws.cell(self.first_row + 1 + day,
                      first_column,
                      day)
         self.day_of_month_column_styling(current_cell, month, day)
-        
+
+
     def day_of_month_column_styling(self, current_cell: Cell, month, day):
-        month_color = self.get_month_color(month)
+        month_color = self.get_month_color_pale(month)
         current_cell.fill = PatternFill(start_color=month_color, end_color=month_color, fill_type="solid")
         current_cell.alignment = Alignment(horizontal="center")
         if day == 1: # first row of the month
@@ -140,9 +150,10 @@ class ExcelService:
                      second_column,
                      date(self.comparing_year.year, month, day).strftime("%A")[:3])
         self.weekday_column_styling(current_cell, month, day)
-        
+
+
     def weekday_column_styling(self, current_cell: Cell, month: int, day: int):
-        month_color = self.get_month_color(month)
+        month_color = self.get_month_color_pale(month)
         current_cell.fill = PatternFill(start_color=month_color, end_color=month_color, fill_type="solid")
         current_cell.alignment = Alignment(horizontal="center")
         if day == 1: # first row of the month
@@ -166,10 +177,11 @@ class ExcelService:
             if person.shiftpattern_iterator == len(person.shiftsystem.shiftpattern):
                 person.shiftpattern_iterator = 0
             counter += 1
-            
+
+
     def person_column_styling(self,current_cell: Cell, month: int, day: int, person: Person):
-        month_color = self.get_month_color_pale(month)
-        current_cell.fill = PatternFill(start_color=month_color, end_color=month_color, fill_type="solid")
+        # month_color = self.get_month_color_pale(month)
+        # current_cell.fill = PatternFill(start_color=month_color, end_color=month_color, fill_type="solid")
         current_cell.alignment = Alignment(horizontal="center")
         if self.persons.index(person) == len(self.persons) - 1: # last person
             if monthrange(self.comparing_year.year, month)[1] == day: # last monthday
@@ -181,7 +193,7 @@ class ExcelService:
         else: # every other person in month
             current_cell.border = Border(right=Sides.thin, bottom=Sides.dotted)
         
-              
+
     def adjust_column_dimensions(self):
         columns_per_month = len(self.persons) + 2
         all_columns_of_table = columns_per_month * 12
@@ -198,6 +210,7 @@ class ExcelService:
         else:
             monthcolor = Colors.aquamarine
         return monthcolor
+    
     
     def get_month_color_pale(self, month):
         if month % 2 != 0:
@@ -225,6 +238,7 @@ class Colors:
     powder_blue = "ff90c6e8"
     powder_blue_pale = "ffc3e1f3"
     
+
 class Sides:
     medium = Side(border_style="medium", color=Colors.black)
     thin = Side(border_style="thin", color=Colors.black)

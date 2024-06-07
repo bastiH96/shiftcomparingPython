@@ -14,7 +14,9 @@ class ShiftsystemHandler:
             pattern_str += term + " "
         print("What's the name of the pattern?")       
         self.create_shiftsystem(input(), pattern)
-            
+        print("Shiftsystem succesfully created!")
+
+
     def get_pattern(self):
         pattern = []
         term = self.validate_term(input())
@@ -22,14 +24,15 @@ class ShiftsystemHandler:
             pattern.append(term)
             term = self.validate_term(input())
         return pattern
-    
+
+
     def create_shiftsystem(self, name: str, pattern: list):
         shiftsystem = Shiftsystem(name, pattern)
         ShiftsystemDataAccess().insert_shiftsystem(shiftsystem)
-        
-            
+
+
     def validate_term(self, term: str):
-        regex_pattern = re.compile(r"^(F12|N12|F|S|N|-|done)$")
+        regex_pattern = re.compile(r"^(F12|N12|F|S|N|-|SN|done)$")
         try:
             if re.match(regex_pattern, term) != None:
                 return term
